@@ -9,6 +9,8 @@ def multi_translate(text):
         return deepl_translate(text)
     elif service == 'Google Translate':
         return google_translate(text)
+    elif service == 'JPDB Translate':
+        return jpdb_translate(text)
     else:
         return 'Error: No Translation Service Available'
 
@@ -51,3 +53,22 @@ def google_translate(text):
     # ts.preaccelerate()
     result = ts.translate_text(text, 'google')
     return result
+
+def jpdb_translate(text):
+    url = "https://jpdb.io/api/v1/ja2en"
+    payload = { "text": text }
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": "Bearer 40d25dac559165ced0d48f2ddd2ce0db"
+    }
+    response = requests.post(url, json=payload, headers=headers)
+    output = response.json()
+    print(output)
+    if output is not None:
+        if 'text' in output:
+            print(output['text'])
+            return output['text']
+        if 'error' in output:
+            return 'Error: ' + output['error']['error_message']
+    return 'Failed to Translate'
